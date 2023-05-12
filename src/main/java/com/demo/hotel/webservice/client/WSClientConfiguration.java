@@ -1,5 +1,5 @@
-package com.demo.hotel.webservice.configuration;
-import com.demo.hotel.webservice.client.HotelWSClient;
+package com.demo.hotel.webservice.client;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
