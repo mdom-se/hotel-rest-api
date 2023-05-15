@@ -1,4 +1,4 @@
-package com.demo.hotelrestapi;
+package com.demo.hotel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
