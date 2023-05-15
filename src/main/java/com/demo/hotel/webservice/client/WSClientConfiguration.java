@@ -19,7 +19,7 @@ public class WSClientConfiguration {
     }
 
     @Bean
-    public HotelWSClient countryClient(Jaxb2Marshaller marshaller) {
+    public HotelWSClient hotelWSClient(Jaxb2Marshaller marshaller) {
         HotelWSClient client = new HotelWSClient(hotelBackendWSUrl);
         client.setDefaultUri(hotelBackendWSUrl);
         client.setMarshaller(marshaller);

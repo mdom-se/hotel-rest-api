@@ -141,7 +141,7 @@
                     <generatePackage>com.demo.hotel.webservice.client.dto</generatePackage>
                     <schemas>
                         <schema>
-                            <url>http://localhost:8080/hotel-ws/hotels.wsdl</url>
+                            <url>http://localhost:8081/hotel-ws/hotels.wsdl</url>
                         </schema>
                     </schemas>
                 </configuration>
