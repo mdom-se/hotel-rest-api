@@ -139,11 +139,10 @@
                 <configuration>
                     <schemaLanguage>WSDL</schemaLanguage>
                     <generatePackage>com.demo.hotel.webservice.client.dto</generatePackage>
-                    <schemas>
-                        <schema>
-                            <url>http://localhost:8081/hotel-ws/hotels.wsdl</url>
-                        </schema>
-                    </schemas>
+                    <schemaDirectory>${project.basedir}/wsdl</schemaDirectory>
+                    <schemaIncludes>
+                        <include>hotels.wsdl</include>
+                    </schemaIncludes>
                 </configuration>
             </plugin>
         </plugins>

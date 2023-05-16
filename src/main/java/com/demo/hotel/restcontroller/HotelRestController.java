@@ -1,20 +1,24 @@
 package com.demo.hotel.restcontroller;
 
-import com.demo.hotel.webservice.client.HotelWSClient;
+import com.demo.hotel.webservice.client.HotelWebServiceClient;
+import com.demo.hotel.webservice.client.dto.AddHotelAmenityRequest;
+import com.demo.hotel.webservice.client.dto.AddHotelAmenityResponse;
 import com.demo.hotel.webservice.client.dto.AddHotelRequest;
 import com.demo.hotel.webservice.client.dto.AddHotelResponse;
+import com.demo.hotel.webservice.client.dto.DeleteHotelAmenityRequest;
+import com.demo.hotel.webservice.client.dto.DeleteHotelAmenityResponse;
 import com.demo.hotel.webservice.client.dto.DeleteHotelRequest;
 import com.demo.hotel.webservice.client.dto.DeleteHotelResponse;
+import com.demo.hotel.webservice.client.dto.GetAmenityListRequest;
+import com.demo.hotel.webservice.client.dto.GetAmenityListResponse;
 import com.demo.hotel.webservice.client.dto.GetHotelListRequest;
 import com.demo.hotel.webservice.client.dto.GetHotelListResponse;
 import com.demo.hotel.webservice.client.dto.GetHotelRequest;
 import com.demo.hotel.webservice.client.dto.GetHotelResponse;
+import com.demo.hotel.webservice.client.dto.HotelAmenityDto;
 import com.demo.hotel.webservice.client.dto.HotelDto;
-import com.demo.hotel.webservice.client.dto.HotelListDto;
 import com.demo.hotel.webservice.client.dto.UpdateHotelRequest;
 import com.demo.hotel.webservice.client.dto.UpdateHotelResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,91 +35,106 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/hotels")
 public class HotelRestController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HotelRestController.class);
+    private final HotelWebServiceClient hotelWebServiceClient;
 
-    private final HotelWSClient hotelWSClient;
-
-    public HotelRestController(HotelWSClient hotelWSClient) {
-        this.hotelWSClient = hotelWSClient;
+    public HotelRestController(HotelWebServiceClient hotelWebServiceClient) {
+        this.hotelWebServiceClient = hotelWebServiceClient;
     }
 
     @GetMapping(value = "/{hotelId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HotelDto> getHotel(@PathVariable Long hotelId) {
-        ResponseEntity<HotelDto> responseEntity;
-        try {
-            GetHotelRequest request = new GetHotelRequest();
-            request.setHotelId(hotelId);
-            GetHotelResponse response = hotelWSClient.getHotel(request);
-            responseEntity = ResponseEntity.ok(response.getHotelDto());
-        } catch (Exception ex) {
-            LOGGER.error("Error getHotel", ex);
-            responseEntity = ResponseEntity.internalServerError().build();
-        }
-        return responseEntity;
+    public ResponseEntity<GetHotelResponse> getHotel(@PathVariable Long hotelId) {
+        GetHotelRequest request = new GetHotelRequest();
+        request.setHotelId(hotelId);
+        GetHotelResponse response = hotelWebServiceClient.process(request, GetHotelResponse.class);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HotelDto> createHotel(@RequestBody HotelDto hotelDto) {
-        ResponseEntity<HotelDto> responseEntity;
-        try {
-            AddHotelRequest request = new AddHotelRequest();
-            request.setHotelDto(hotelDto);
-            AddHotelResponse response = hotelWSClient.addHotel(request);
-            responseEntity = ResponseEntity.ok(response.getHotelDto());
-        } catch (Exception ex) {
-            LOGGER.error("Error createHotel", ex);
-            responseEntity = ResponseEntity.internalServerError().build();
-        }
-        return responseEntity;
+    public ResponseEntity<AddHotelResponse> createHotel(@RequestBody HotelDto hotelDto) {
+        AddHotelRequest request = new AddHotelRequest();
+        request.setHotelDto(hotelDto);
+        AddHotelResponse response = hotelWebServiceClient.process(request, AddHotelResponse.class);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response);
+
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HotelDto> updateHotel(@RequestBody HotelDto hotelDto) {
-        ResponseEntity<HotelDto> responseEntity;
-        try {
-            UpdateHotelRequest request = new UpdateHotelRequest();
-            request.setHotelDto(hotelDto);
-            UpdateHotelResponse response = hotelWSClient.updateHotel(request);
-            responseEntity = ResponseEntity.ok(response.getHotelDto());
-        } catch (Exception ex) {
-            LOGGER.error("Error updateHotel", ex);
-            responseEntity = ResponseEntity.internalServerError().build();
-        }
-        return responseEntity;
+    public ResponseEntity<UpdateHotelResponse> updateHotel(@RequestBody HotelDto hotelDto) {
+        UpdateHotelRequest request = new UpdateHotelRequest();
+        request.setHotelDto(hotelDto);
+        UpdateHotelResponse response = hotelWebServiceClient.process(request, UpdateHotelResponse.class);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response);
     }
 
     @DeleteMapping(value = "/{hotelId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> deleteHotel(@PathVariable Long hotelId) {
-        ResponseEntity<Boolean> responseEntity;
-        try {
-            DeleteHotelRequest request = new DeleteHotelRequest();
-            request.setHotelId(hotelId);
-            DeleteHotelResponse response = hotelWSClient.deleteHotel(request);
-            //@TODO add a dto to return the result of the delete
-            responseEntity = ResponseEntity.ok(response.isResult());
-        } catch (Exception ex) {
-            LOGGER.error("Error deleteHotel", ex);
-            responseEntity = ResponseEntity.internalServerError().build();
-        }
-        return responseEntity;
+    public ResponseEntity<DeleteHotelResponse> deleteHotel(@PathVariable Long hotelId) {
+        DeleteHotelRequest request = new DeleteHotelRequest();
+        request.setHotelId(hotelId);
+        DeleteHotelResponse response = hotelWebServiceClient.process(request, DeleteHotelResponse.class);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HotelListDto> getHotelList(@RequestParam(required = false) String hotelName,
+    public ResponseEntity<GetHotelListResponse> getHotelList(@RequestParam(required = false) String hotelName,
                                                      @RequestParam int page,
                                                      @RequestParam int pageSize) {
-        ResponseEntity<HotelListDto> responseEntity;
-        try {
-            GetHotelListRequest request = new GetHotelListRequest();
-            request.setHotelName(hotelName);
-            request.setPage(page);
-            request.setSize(pageSize);
-            GetHotelListResponse response = hotelWSClient.getHotelList(request);
-            responseEntity = ResponseEntity.ok(response.getHotelListDto());
-        } catch (Exception ex) {
-            LOGGER.error("Error getHotelList", ex);
-            responseEntity = ResponseEntity.internalServerError().build();
-        }
-        return responseEntity;
+        GetHotelListRequest request = new GetHotelListRequest();
+        request.setHotelName(hotelName);
+        request.setPage(page);
+        request.setPageSize(pageSize);
+        GetHotelListResponse response = hotelWebServiceClient.process(request, GetHotelListResponse.class);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response);
+    }
+
+
+    @GetMapping(value = "/{hotelId}/amenities", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetAmenityListResponse> addHotelAmenities(@PathVariable Long hotelId) {
+        GetAmenityListRequest request = new GetAmenityListRequest();
+        request.setHotelId(hotelId);
+        GetAmenityListResponse response = hotelWebServiceClient.process(request, GetAmenityListResponse.class);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response);
+
+    }
+    @PostMapping(value = "/{hotelId}/amenities/{amenityId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AddHotelAmenityResponse> addHotelAmenities(@PathVariable Long hotelId,
+                                                             @PathVariable Long amenityId) {
+        AddHotelAmenityRequest request = new AddHotelAmenityRequest();
+        HotelAmenityDto dto = new HotelAmenityDto();
+        dto.setHotelId(hotelId);
+        dto.setAmenityId(amenityId);
+        request.setHotelAmenityDto(dto);
+        AddHotelAmenityResponse response = hotelWebServiceClient.process(request, AddHotelAmenityResponse.class);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response);
+
+    }
+
+
+    @DeleteMapping(value = "/{hotelId}/amenities/{amenityId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DeleteHotelAmenityResponse> deleteHotelAmenities(@PathVariable Long hotelId,
+                                                          @PathVariable Long amenityId) {
+        DeleteHotelAmenityRequest request = new DeleteHotelAmenityRequest();
+        HotelAmenityDto dto = new HotelAmenityDto();
+        dto.setHotelId(hotelId);
+        dto.setAmenityId(amenityId);
+        request.setHotelAmenityDto(dto);
+        DeleteHotelAmenityResponse response = hotelWebServiceClient.process(request, DeleteHotelAmenityResponse.class);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response);
+
     }
 }
