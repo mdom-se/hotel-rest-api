@@ -9,8 +9,8 @@ import com.demo.hotel.webservice.client.dto.DeleteHotelAmenityRequest;
 import com.demo.hotel.webservice.client.dto.DeleteHotelAmenityResponse;
 import com.demo.hotel.webservice.client.dto.DeleteHotelRequest;
 import com.demo.hotel.webservice.client.dto.DeleteHotelResponse;
-import com.demo.hotel.webservice.client.dto.GetAmenityListRequest;
-import com.demo.hotel.webservice.client.dto.GetAmenityListResponse;
+import com.demo.hotel.webservice.client.dto.GetHotelAmenityListRequest;
+import com.demo.hotel.webservice.client.dto.GetHotelAmenityListResponse;
 import com.demo.hotel.webservice.client.dto.GetHotelListRequest;
 import com.demo.hotel.webservice.client.dto.GetHotelListResponse;
 import com.demo.hotel.webservice.client.dto.GetHotelRequest;
@@ -98,10 +98,10 @@ public class HotelRestController {
 
 
     @GetMapping(value = "/{hotelId}/amenities", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetAmenityListResponse> addHotelAmenities(@PathVariable Long hotelId) {
-        GetAmenityListRequest request = new GetAmenityListRequest();
+    public ResponseEntity<GetHotelAmenityListResponse> getHotelAmenityList(@PathVariable Long hotelId) {
+        GetHotelAmenityListRequest request = new GetHotelAmenityListRequest();
         request.setHotelId(hotelId);
-        GetAmenityListResponse response = hotelWebServiceClient.process(request, GetAmenityListResponse.class);
+        GetHotelAmenityListResponse response = hotelWebServiceClient.process(request, GetHotelAmenityListResponse.class);
         return ResponseEntity
                 .status(response.getStatusCode())
                 .body(response);

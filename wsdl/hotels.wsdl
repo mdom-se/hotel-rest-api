@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-                  xmlns:tns="http://demo.hotel.com/hotel-ws"
-                  targetNamespace="http://demo.hotel.com/hotel-ws">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:tns="http://demo.hotel.com/hotel-ws" targetNamespace="http://demo.hotel.com/hotel-ws">
     <wsdl:types>
         <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
                    targetNamespace="http://demo.hotel.com/hotel-ws">
@@ -84,7 +82,7 @@
                     <xs:complexContent>
                         <xs:extension base="tns:responseStatus">
                             <xs:sequence>
-                                <xs:element name="hotelListDto" type="tns:hotelListDto"/>
+                                <xs:element name="result" type="tns:hotelListDto"/>
                             </xs:sequence>
                         </xs:extension>
                     </xs:complexContent>
@@ -151,15 +149,15 @@
                 </xs:complexType>
             </xs:element>
 
-            <!-- GetAmenityList -->
-            <xs:element name="getAmenityListRequest">
+            <!-- GetHotelAmenityListRequest -->
+            <xs:element name="getHotelAmenityListRequest">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element name="hotelId" type="xs:long"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getAmenityListResponse">
+            <xs:element name="getHotelAmenityListResponse">
                 <xs:complexType>
                     <xs:complexContent>
                         <xs:extension base="tns:responseStatus">
@@ -213,8 +211,29 @@
             </xs:element>
 
 
+            <!-- GetAmenityListRequest -->
+            <xs:element name="getAmenityListRequest">
+                <xs:complexType/>
+            </xs:element>
+            <xs:element name="getAmenityListResponse">
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="tns:responseStatus">
+                            <xs:sequence>
+                                <xs:element maxOccurs="unbounded" name="amenityListDto" type="tns:amenityDto"/>
+                            </xs:sequence>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+
+
         </xs:schema>
     </wsdl:types>
+    <wsdl:message name="getHotelAmenityListRequest">
+        <wsdl:part element="tns:getHotelAmenityListRequest" name="getHotelAmenityListRequest">
+        </wsdl:part>
+    </wsdl:message>
     <wsdl:message name="deleteHotelResponse">
         <wsdl:part element="tns:deleteHotelResponse" name="deleteHotelResponse">
         </wsdl:part>
@@ -223,12 +242,12 @@
         <wsdl:part element="tns:getHotelListRequest" name="getHotelListRequest">
         </wsdl:part>
     </wsdl:message>
-    <wsdl:message name="getAmenityListRequest">
-        <wsdl:part element="tns:getAmenityListRequest" name="getAmenityListRequest">
-        </wsdl:part>
-    </wsdl:message>
     <wsdl:message name="deleteHotelAmenityResponse">
         <wsdl:part element="tns:deleteHotelAmenityResponse" name="deleteHotelAmenityResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getAmenityListRequest">
+        <wsdl:part element="tns:getAmenityListRequest" name="getAmenityListRequest">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="getHotelRequest">
@@ -237,6 +256,10 @@
     </wsdl:message>
     <wsdl:message name="updateHotelResponse">
         <wsdl:part element="tns:updateHotelResponse" name="updateHotelResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getHotelAmenityListResponse">
+        <wsdl:part element="tns:getHotelAmenityListResponse" name="getHotelAmenityListResponse">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="addHotelAmenityRequest">
@@ -280,6 +303,12 @@
         </wsdl:part>
     </wsdl:message>
     <wsdl:portType name="HotelsPort">
+        <wsdl:operation name="getHotelAmenityList">
+            <wsdl:input message="tns:getHotelAmenityListRequest" name="getHotelAmenityListRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:getHotelAmenityListResponse" name="getHotelAmenityListResponse">
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="deleteHotel">
             <wsdl:input message="tns:deleteHotelRequest" name="deleteHotelRequest">
             </wsdl:input>
@@ -292,16 +321,16 @@
             <wsdl:output message="tns:getHotelListResponse" name="getHotelListResponse">
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getAmenityList">
-            <wsdl:input message="tns:getAmenityListRequest" name="getAmenityListRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:getAmenityListResponse" name="getAmenityListResponse">
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="deleteHotelAmenity">
             <wsdl:input message="tns:deleteHotelAmenityRequest" name="deleteHotelAmenityRequest">
             </wsdl:input>
             <wsdl:output message="tns:deleteHotelAmenityResponse" name="deleteHotelAmenityResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAmenityList">
+            <wsdl:input message="tns:getAmenityListRequest" name="getAmenityListRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:getAmenityListResponse" name="getAmenityListResponse">
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getHotel">
@@ -331,6 +360,15 @@
     </wsdl:portType>
     <wsdl:binding name="HotelsPortSoap11" type="tns:HotelsPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="getHotelAmenityList">
+            <soap:operation soapAction=""/>
+            <wsdl:input name="getHotelAmenityListRequest">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="getHotelAmenityListResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="deleteHotel">
             <soap:operation soapAction=""/>
             <wsdl:input name="deleteHotelRequest">
@@ -349,21 +387,21 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getAmenityList">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="getAmenityListRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="getAmenityListResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="deleteHotelAmenity">
             <soap:operation soapAction=""/>
             <wsdl:input name="deleteHotelAmenityRequest">
                 <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output name="deleteHotelAmenityResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAmenityList">
+            <soap:operation soapAction=""/>
+            <wsdl:input name="getAmenityListRequest">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="getAmenityListResponse">
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>

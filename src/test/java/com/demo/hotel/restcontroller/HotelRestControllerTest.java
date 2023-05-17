@@ -11,8 +11,8 @@ import com.demo.hotel.webservice.client.dto.DeleteHotelAmenityRequest;
 import com.demo.hotel.webservice.client.dto.DeleteHotelAmenityResponse;
 import com.demo.hotel.webservice.client.dto.DeleteHotelRequest;
 import com.demo.hotel.webservice.client.dto.DeleteHotelResponse;
-import com.demo.hotel.webservice.client.dto.GetAmenityListRequest;
-import com.demo.hotel.webservice.client.dto.GetAmenityListResponse;
+import com.demo.hotel.webservice.client.dto.GetHotelAmenityListRequest;
+import com.demo.hotel.webservice.client.dto.GetHotelAmenityListResponse;
 import com.demo.hotel.webservice.client.dto.GetHotelListRequest;
 import com.demo.hotel.webservice.client.dto.GetHotelListResponse;
 import com.demo.hotel.webservice.client.dto.GetHotelRequest;
@@ -195,7 +195,7 @@ class HotelRestControllerTest {
                 }).collect(Collectors.toList()));
         value.setTotalElements(10);
         value.setTotalPages(2);
-        expectedResponse.setHotelListDto(value);
+        expectedResponse.setResult(value);
 
         when(hotelWebServiceClient.process(any(GetHotelListRequest.class), eq(GetHotelListResponse.class)))
                 .thenReturn(expectedResponse);
@@ -261,7 +261,7 @@ class HotelRestControllerTest {
     void getHotelAmenities() throws Exception {
         long hotelId = 1L;
 
-        GetAmenityListResponse expectedResponse = new GetAmenityListResponse();
+        GetHotelAmenityListResponse expectedResponse = new GetHotelAmenityListResponse();
         expectedResponse.getAmenityListDto().addAll(LongStream.iterate(1, n -> n + 1)
                 .limit(5)
                 .mapToObj(n -> {
@@ -272,7 +272,7 @@ class HotelRestControllerTest {
         expectedResponse.setStatusCode(OK.value());
         expectedResponse.setMessage(OK.name());
 
-        when(hotelWebServiceClient.process(any(GetAmenityListRequest.class), eq(GetAmenityListResponse.class)))
+        when(hotelWebServiceClient.process(any(GetHotelAmenityListRequest.class), eq(GetHotelAmenityListResponse.class)))
                 .thenReturn(expectedResponse);
 
         // test
