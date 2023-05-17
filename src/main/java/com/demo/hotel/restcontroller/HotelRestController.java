@@ -51,18 +51,18 @@ public class HotelRestController {
                 .body(response);
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AddHotelResponse> createHotel(@RequestBody HotelDto hotelDto) {
         AddHotelRequest request = new AddHotelRequest();
         request.setHotelDto(hotelDto);
-        AddHotelResponse response = hotelWebServiceClient.process(request, AddHotelResponse.class);
+            AddHotelResponse response = hotelWebServiceClient.process(request, AddHotelResponse.class);
         return ResponseEntity
                 .status(response.getStatusCode())
                 .body(response);
 
     }
 
-    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UpdateHotelResponse> updateHotel(@RequestBody HotelDto hotelDto) {
         UpdateHotelRequest request = new UpdateHotelRequest();
         request.setHotelDto(hotelDto);
