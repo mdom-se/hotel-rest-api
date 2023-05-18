@@ -26,6 +26,7 @@ import com.demo.hotel.webservice.client.dto.UpdateHotelResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -53,6 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(HotelRestController.class)
 @Import(WebConfigProperties.class)
+@AutoConfigureMockMvc(addFilters = false)
 class HotelRestControllerTest {
 
     @Autowired
@@ -64,6 +66,7 @@ class HotelRestControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    
     @Test
     void getHotel() throws Exception {
         // scenario setup
@@ -91,6 +94,7 @@ class HotelRestControllerTest {
 
     }
 
+    
     @Test
     void createHotel() throws Exception {
         // scenario setup
@@ -125,6 +129,7 @@ class HotelRestControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
     }
 
+    
     @Test
     void updateHotel() throws Exception {
         long hotelId = 1L;
@@ -157,6 +162,7 @@ class HotelRestControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
     }
 
+    
     @Test
     void deleteHotel() throws Exception {
         // scenario setup
@@ -178,6 +184,7 @@ class HotelRestControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
     }
 
+    
     @Test
     void getHotelList() throws Exception {
 
@@ -211,6 +218,7 @@ class HotelRestControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
     }
 
+    
     @Test
     void addHotelAmenities() throws Exception {
         long hotelId = 1L;
@@ -236,6 +244,7 @@ class HotelRestControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
     }
 
+    
     @Test
     void deleteHotelAmenities() throws Exception {
         long hotelId = 1L;
@@ -257,6 +266,7 @@ class HotelRestControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
     }
 
+    
     @Test
     void getHotelAmenities() throws Exception {
         long hotelId = 1L;
@@ -283,6 +293,7 @@ class HotelRestControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
     }
 
+    
     @Test
     void getHotel_unexpectedError() throws Exception {
         // scenario setup
@@ -304,6 +315,7 @@ class HotelRestControllerTest {
 
     }
 
+    
     @Test
     void getHotel_httpMediaNotSupportedError() throws Exception {
         // scenario setup
