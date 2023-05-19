@@ -1,6 +1,8 @@
 package com.demo.hotel.restcontroller;
 
+import com.demo.hotel.aspect.LoggerAspect;
 import com.demo.hotel.configuration.WebConfigProperties;
+import com.demo.hotel.restcontroller.HotelRestControllerExceptionHandler.ErrorMessage;
 import com.demo.hotel.webservice.client.HotelWebServiceClient;
 import com.demo.hotel.webservice.client.dto.AddHotelAmenityRequest;
 import com.demo.hotel.webservice.client.dto.AddHotelAmenityResponse;
@@ -25,6 +27,7 @@ import com.demo.hotel.webservice.client.dto.UpdateHotelRequest;
 import com.demo.hotel.webservice.client.dto.UpdateHotelResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,12 +36,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.ws.client.WebServiceIOException;
 
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static com.demo.hotel.restcontroller.HotelRestControllerExceptionHandler.CONTENT_TYPE_NOT_SUPPORTED_ERROR;
-import static com.demo.hotel.restcontroller.HotelRestControllerExceptionHandler.UNEXPECTED_ERROR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -53,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(HotelRestController.class)
-@Import(WebConfigProperties.class)
+@Import({AnnotationAwareAspectJAutoProxyCreator.class, WebConfigProperties.class, LoggerAspect.class})
 @AutoConfigureMockMvc(addFilters = false)
 class HotelRestControllerTest {
 
@@ -301,7 +303,7 @@ class HotelRestControllerTest {
 
         ResponseStatus expectedResponse = new ResponseStatus();
         expectedResponse.setStatusCode(INTERNAL_SERVER_ERROR.value());
-        expectedResponse.setMessage(UNEXPECTED_ERROR);
+        expectedResponse.setMessage(ErrorMessage.UNEXPECTED.message());
 
         when(hotelWebServiceClient.process(any(GetHotelRequest.class), eq(GetHotelResponse.class)))
                 .thenThrow(new RuntimeException("unexpectedError"));
@@ -326,12 +328,38 @@ class HotelRestControllerTest {
 
         ResponseStatus expectedResponse = new ResponseStatus();
         expectedResponse.setStatusCode(BAD_REQUEST.value());
-        expectedResponse.setMessage(CONTENT_TYPE_NOT_SUPPORTED_ERROR);
+        expectedResponse.setMessage(ErrorMessage.CONTENT_TYPE_NOT_SUPPORTED.message());
 
         // test
         ResultActions resultActions = mockMvc.perform(post("/hotels")
                 .content(objectMapper.writeValueAsString(requestBody))
                 .contentType(MediaType.APPLICATION_XML));
+
+        // verify results;
+        resultActions.andExpect(status().isInternalServerError())
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+
+    }
+
+
+    @Test
+    void createHotel_connectionError() throws Exception {
+        // scenario setup
+        HotelDto requestBody = new HotelDto();
+        requestBody.setHotelName("Hotel Name");
+        requestBody.setRating(4);
+        requestBody.setAddress("Address test");
+
+        ResponseStatus expectedResponse = new ResponseStatus();
+        expectedResponse.setStatusCode(INTERNAL_SERVER_ERROR.value());
+        expectedResponse.setMessage(ErrorMessage.NETWORK.message());
+
+        when(hotelWebServiceClient.process(any(AddHotelRequest.class), eq(AddHotelResponse.class)))
+                .thenThrow(new WebServiceIOException("unexpectedError"));
+        // test
+        ResultActions resultActions = mockMvc.perform(post("/hotels")
+                .content(objectMapper.writeValueAsString(requestBody))
+                .contentType(MediaType.APPLICATION_JSON_VALUE));
 
         // verify results;
         resultActions.andExpect(status().isInternalServerError())
