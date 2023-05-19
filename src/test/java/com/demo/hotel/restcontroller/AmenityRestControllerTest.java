@@ -1,5 +1,6 @@
 package com.demo.hotel.restcontroller;
 
+import com.demo.hotel.aspect.LoggerAspect;
 import com.demo.hotel.configuration.WebConfigProperties;
 import com.demo.hotel.webservice.client.HotelWebServiceClient;
 import com.demo.hotel.webservice.client.dto.AmenityDto;
@@ -7,6 +8,7 @@ import com.demo.hotel.webservice.client.dto.GetAmenityListRequest;
 import com.demo.hotel.webservice.client.dto.GetAmenityListResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AmenityRestController.class)
-@Import(WebConfigProperties.class)
+@Import({AnnotationAwareAspectJAutoProxyCreator.class, WebConfigProperties.class, LoggerAspect.class})
 @AutoConfigureMockMvc(addFilters = false)
 class AmenityRestControllerTest {
 
