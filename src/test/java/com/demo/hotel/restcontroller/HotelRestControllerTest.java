@@ -1,5 +1,19 @@
 package com.demo.hotel.restcontroller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.demo.hotel.TestConfig;
 import com.demo.hotel.aspect.LoggerAspect;
 import com.demo.hotel.configuration.WebConfigProperties;
 import com.demo.hotel.restcontroller.HotelRestControllerExceptionHandler.ErrorMessage;
@@ -26,6 +40,8 @@ import com.demo.hotel.webservice.client.dto.ResponseStatus;
 import com.demo.hotel.webservice.client.dto.UpdateHotelRequest;
 import com.demo.hotel.webservice.client.dto.UpdateHotelResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,24 +54,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.ws.client.WebServiceIOException;
 
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(HotelRestController.class)
-@Import({AnnotationAwareAspectJAutoProxyCreator.class, WebConfigProperties.class, LoggerAspect.class})
+@Import({AnnotationAwareAspectJAutoProxyCreator.class, WebConfigProperties.class, LoggerAspect.class, TestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class HotelRestControllerTest {
 
