@@ -1,66 +1,88 @@
 package com.demo.hotel.security;
 
-import org.springframework.beans.factory.annotation.Value;
+import static com.demo.hotel.security.PasswordCustomEncoder.USER_READ;
+import static com.demo.hotel.security.PasswordCustomEncoder.USER_WRITE_READ;
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class BasicAuthWebSecurityConfiguration {
 
-    static final String USER_READ = "USER_READ";
-    static final String USER_WRITE_READ = "USER_WRITE_READ";
 
-    private final AppBasicAuthenticationEntryPoint authenticationEntryPoint;
+  private final JwtTokenFilter jwtTokenFilter;
+
+  private final JwtAuthenticationProvider customAuthenticationProvider;
+
+  public BasicAuthWebSecurityConfiguration(JwtTokenFilter jwtTokenFilter,
+      JwtAuthenticationProvider customAuthenticationProvider) {
+    this.jwtTokenFilter = jwtTokenFilter;
+    this.customAuthenticationProvider = customAuthenticationProvider;
+  }
+
+  // adding our custom authentication providers
+  // authentication manager will call these custom provider's
+  // authenticate methods from now on.
+  @Autowired
+  void registerProvider(AuthenticationManagerBuilder auth) {
+    auth.authenticationProvider(customAuthenticationProvider);
+  }
 
 
-    public BasicAuthWebSecurityConfiguration(AppBasicAuthenticationEntryPoint authenticationEntryPoint) {
-        this.authenticationEntryPoint = authenticationEntryPoint;
-    }
+  @Bean
+  CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/actuator/**").permitAll()
-                .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/hotels/**", "/amenities/**").hasAnyRole(USER_READ, USER_WRITE_READ)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/hotels/**", "/amenities/**").hasRole(USER_WRITE_READ)
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic()
-                .authenticationEntryPoint(authenticationEntryPoint);
-        return http.build();
-    }
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf().disable()
+        .authorizeRequests()
+        .antMatchers("/actuator/**", "/auth").permitAll()
+        .and()
+        .authorizeRequests()
+        .antMatchers(HttpMethod.GET, "/hotels/**", "/amenities/**").hasAnyRole(USER_READ, USER_WRITE_READ)
+        .and()
+        .authorizeRequests()
+        .antMatchers("/hotels/**", "/amenities/**").hasRole(USER_WRITE_READ)
+        .anyRequest()
+        .authenticated()
+        .and()
+        .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+        .exceptionHandling()
+        .authenticationEntryPoint(
+            (request, response, ex) ->
+                response.sendError(
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    ex.getMessage()
+                )
+        );
+    return http.cors(withDefaults()).build();
+  }
 
-    @Bean
-    public InMemoryUserDetailsManager userDetailsService(
-            @Value("${user.rest.password:hello}") String userRestPassword) {
-        UserDetails userRw = User
-                .withUsername("user")
-                .password(passwordEncoder().encode(userRestPassword))
-                .roles(USER_WRITE_READ)
-                .build();
-        UserDetails user = User
-                .withUsername("read-user")
-                .password(passwordEncoder().encode(userRestPassword))
-                .roles(USER_READ)
-                .build();
-        return new InMemoryUserDetailsManager(userRw, user);
-    }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(8);
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(
+      AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
+  }
+
+
 }

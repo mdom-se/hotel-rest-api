@@ -1,5 +1,14 @@
 package com.demo.hotel.restcontroller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.demo.hotel.TestConfig;
 import com.demo.hotel.aspect.LoggerAspect;
 import com.demo.hotel.configuration.WebConfigProperties;
 import com.demo.hotel.webservice.client.HotelWebServiceClient;
@@ -7,6 +16,8 @@ import com.demo.hotel.webservice.client.dto.AmenityDto;
 import com.demo.hotel.webservice.client.dto.GetAmenityListRequest;
 import com.demo.hotel.webservice.client.dto.GetAmenityListResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +28,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(AmenityRestController.class)
-@Import({AnnotationAwareAspectJAutoProxyCreator.class, WebConfigProperties.class, LoggerAspect.class})
+@Import({AnnotationAwareAspectJAutoProxyCreator.class, WebConfigProperties.class, LoggerAspect.class, TestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class AmenityRestControllerTest {
 
