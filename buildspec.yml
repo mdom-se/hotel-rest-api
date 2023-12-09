@@ -1,0 +1,36 @@
+version: 0.2
+
+phases:
+  install:
+    # We are using the image: aws/codebuild/amazonlinux2-x86_64-standard:corretto8
+    # that's why we commented the below lines
+    #runtime-versions:
+    #java: openjdk8
+    commands:
+      - java -version
+      - mvn -version
+      #- echo "Installing Maven"
+      #- apt-get update
+      #- apt-get install -y maven
+
+  pre_build:
+    commands:
+      - echo "Nothing to do before build"
+
+  build:
+    commands:
+      - mvn clean install
+      - docker build -t $IMAGE_NAME .
+
+  post_build:
+    commands:
+      - echo "Build completed on $(date)"
+      - echo "Pushing the Docker image to Amazon ECR"
+      - echo $AWS_DEFAULT_REGION
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL
+      - docker tag $IMAGE_NAME:latest $ECR_REPO_URL:latest
+      - docker push $ECR_REPO_URL:latest
+
+cache:
+  paths:
+    - '/root/.m2/**/*'
