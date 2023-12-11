@@ -20,7 +20,7 @@ phases:
   build:
     commands:
       - mvn clean install
-      - docker build -t $IMAGE_NAME .
+      - docker build -t $IMAGE_NAME -f Dockerfile-ECS
 
   post_build:
     commands:
