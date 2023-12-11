@@ -1,4 +1,4 @@
 FROM openjdk:8u342-jre-slim
 RUN apt-get update && apt-get install -y curl
-COPY target/hotel-rest-api-0.0.1-SNAPSHOT.jar hotel-rest-api.jar
+COPY target/hotel-rest-api-0.0.1-SNAPSHOT.war hotel-rest-api.jar
 ENTRYPOINT ["java", "-jar", "hotel-rest-api.jar"]
